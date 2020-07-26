@@ -1,0 +1,23 @@
+﻿@{ 
+    //Layout = "~/Views/Home/Index.cshtml";
+    Layout = null;
+}
+@model IEnumerable<WebApplication2.Models.FeedItem>
+
+@if (Model != null)
+{
+  foreach (var item in Model)
+  {
+
+  <div class="date">
+      @Html.DisplayFor(modelItem => item.Date)
+  </div>
+  <div class="title">
+      @Html.DisplayFor(modelItem => item.Title)
+  </div>
+  <div class="description">
+       @Html.Raw(item.Description)
+  </div>
+  }
+}
+

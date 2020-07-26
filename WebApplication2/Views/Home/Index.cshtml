@@ -1,0 +1,78 @@
+﻿@model IEnumerable<WebApplication2.Models.FeedItem>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+@System.Web.Optimization.Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/jquery")
+
+<header> <a class="refreshBtn">Refresh Feed</a> <div class="logo">Logo</div></header>
+
+<aside>
+    <div class="title" data-href="https://rss.walla.co.il/feed/1?type=main">ואללה! חדשות</div>
+    <div class="title" data-href="https://rss.walla.co.il/feed/3?type=main">ואללה! ספורט</div>
+    <div class="title" data-href="https://rss.walla.co.il/feed/31?type=main">ואללה! רכב</div>
+    <div class="title" data-href="https://rss.walla.co.il/feed/24?type=main">ואללה! אופנה</div>
+</aside>
+
+<section>
+
+    <div class="rss-contnet-container">
+        @Html.Partial("_RssView")
+    </div>
+
+</section>
+
+
+<script type="text/javascript">
+
+    $(".refreshBtn").click(function () {
+        let val = $(".selected").attr("data-href");
+        window.location = "/Home/Index?linkUrl=" + val
+    });
+
+        $("aside .title").click(function () {
+
+           let val = $(this).attr("data-href");
+
+           $("aside .title").removeClass("selected");
+           $(this).addClass("selected");
+
+           $.ajax(
+                {
+                    type: 'GET',
+                    url: "@Common.BaseApi?linkUrl=" + val,
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (data) {
+
+                        console.log(data);
+                        createHtmlfromData(data);
+                        localStorage.setItem("local-cache", data);
+                    },
+                    error: function (xhr, textStatus) {
+
+                        console.log('Error in Operation');
+
+                        var cache_json = localStorage.getItem("local-cache")
+                        createHtmlfromData(cache_json);
+                    }
+                });
+        })
+
+
+
+    function createHtmlfromData(data) {
+        $(".rss-contnet-container").html("");
+        $.each(data, function (i, item) {
+
+            var htmlItem = '<div class="date">' + item.Date + '</div>' +
+                '<div class="title">' + item.Title + '</div>' +
+                '<div class="description">' + item.Description + '</div>'
+
+            $(".rss-contnet-container").append(htmlItem);
+        });
+    }
+</script>
+
